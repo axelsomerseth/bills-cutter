@@ -1,0 +1,2 @@
+# BillsCutter
+ A bills splitter
