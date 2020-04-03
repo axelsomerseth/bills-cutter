@@ -1,6 +1,6 @@
 import React from 'react';
 import './Feed.css';
-import '../bootstrap.css';
+import { Form, Button } from 'react-bootstrap';
 
 class FeedForm extends React.Component {
     constructor(props) {
@@ -48,19 +48,26 @@ class FeedForm extends React.Component {
     }
     render() {
         return (
-            <form onSubmit={this.handleSubmit}>
-                <label>
-                    Number of people:
-                    <input className="feed-form-inputs" name="numberOfPeople" type="number" value={this.state.numberOfPeople} onChange={this.handleChange} />
-                </label>
-                <br />
-                <label>
-                    Bill amount:
-                    <input className="feed-form-inputs" name="billAmount" type="number" value={this.state.billAmount} onChange={this.handleChange} />
-                </label>
-                <br />
-                <input className="buttons" type="submit" value="Submit" />
-            </form>
+            <Form onSubmit={this.handleSubmit}>
+                {/* <Form.Group controlId="formBasicRange">
+                    <Form.Label>Range</Form.Label>
+                    <Form.Control type="range" />
+                </Form.Group> */}
+                <Form.Group controlId="feedFormNumberOfPeople">
+                    <Form.Label>Number of people</Form.Label>
+                    <Form.Control name="numberOfPeople" type="number" value={this.state.numberOfPeople} onChange={this.handleChange} />
+                    <Form.Text className="text-muted">
+                        Please enter the quantity of people.
+                    </Form.Text>
+                </Form.Group>
+                <Form.Group controlId="feedFormBillAmount">
+                    <Form.Label>Bill amount</Form.Label>
+                    <Form.Control name="billAmount" type="number" value={this.state.billAmount} onChange={this.handleChange} />
+                </Form.Group>
+                <Button variant="primary" type="submit">
+                    Submit
+                </Button>
+            </Form>
         );
     }
 }
