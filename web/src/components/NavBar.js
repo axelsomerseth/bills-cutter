@@ -1,7 +1,7 @@
 import React from "react";
 import { useAuth0 } from "../react-auth0-spa";
 import { Link } from "react-router-dom";
-import { Navbar, Button } from 'react-bootstrap';
+import { Navbar, Button, Nav, Form } from 'react-bootstrap';
 
 const NavBar = () => {
     const { isAuthenticated, loginWithRedirect, logout } = useAuth0();
@@ -9,29 +9,36 @@ const NavBar = () => {
     return (
         <div>
             {!isAuthenticated && (
-                <Navbar className="navigation">
+                <Navbar variant="money" fixed="top">
                     <Navbar.Brand>
-                        <Link to="/">Bills Cutter</Link>&nbsp;
+                        <Link className="link" to="/">Bills Cutter</Link>&nbsp;
                     </Navbar.Brand>
-                    <Navbar.Toggle />
-                    <Navbar.Collapse className="justify-content-end">
-                        <Button variant="link" onClick={() => loginWithRedirect({})}>Log in</Button>
+                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                    <Navbar.Collapse id="basic-navbar-nav">
+                        <Nav className="mr-auto">
+                            {/* <Link className="link" to="/profile">Profile</Link> */}
+                        </Nav>
                     </Navbar.Collapse>
+                    <Form inline className="justify-content-end">
+                        <Button variant="outline-light" onClick={() => loginWithRedirect({})}>Log in</Button>
+                    </Form>
                 </Navbar>
             )}
 
             {isAuthenticated && (
-                <Navbar className="navigation">
+                <Navbar variant="money">
                     <Navbar.Brand>
-                        <Link to="/">Bills Cutter</Link>&nbsp;
+                        <Link className="link" to="/">Bills Cutter</Link>&nbsp;
                     </Navbar.Brand>
-                    <Navbar.Toggle />
-                    <Navbar.Collapse className="justify-content-end">
-                        <Navbar.Text>
-                            <Link to="/profile">Profile</Link>
-                        </Navbar.Text>
-                        <Button variant="link" onClick={() => logout()}> Log out </Button>
+                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                    <Navbar.Collapse id="basic-navbar-nav">
+                        <Nav className="mr-auto">
+                            <Link className="link" to="/profile">Profile</Link>
+                        </Nav>
                     </Navbar.Collapse>
+                    <Form inline className="justify-content-end">
+                        <Button variant="outline-light" onClick={() => logout()}> Log out </Button>
+                    </Form>
                 </Navbar>
             )}
         </div>

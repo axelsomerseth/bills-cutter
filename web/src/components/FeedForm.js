@@ -15,9 +15,6 @@ class FeedForm extends React.Component {
         this.setState({ [name]: value });
     }
     handleSubmit(event) {
-        let action = this.props.action;
-        let method = this.props.method;
-        let mode = this.props.mode;
         event.preventDefault();
         let formData = { numberOfPeople: Number(this.state.numberOfPeople), billAmount: Number(this.state.billAmount) };
         this.getData(formData);
@@ -26,11 +23,6 @@ class FeedForm extends React.Component {
         let url = this.props.action;
         let method = this.props.method;
         let mode = this.props.mode;
-        let tryGetJson = function (response) {
-            return response.text().then(function (text) {
-                return text ? JSON.parse(text) : {}
-            })
-        };
         const requestOptions = {
             method: method,
             mode: mode,
@@ -52,18 +44,34 @@ class FeedForm extends React.Component {
                     <Form.Label>Range</Form.Label>
                     <Form.Control type="range" />
                 </Form.Group> */}
-                <Form.Group controlId="feedFormNumberOfPeople">
-                    <Form.Label>Number of people</Form.Label>
-                    <Form.Control name="numberOfPeople" type="number" value={this.state.numberOfPeople} onChange={this.handleChange} />
-                    <Form.Text className="text-muted">
-                        Please enter the quantity of people.
-                    </Form.Text>
-                </Form.Group>
-                <Form.Group controlId="feedFormBillAmount">
-                    <Form.Label>Bill amount</Form.Label>
-                    <Form.Control name="billAmount" type="number" value={this.state.billAmount} onChange={this.handleChange} />
-                </Form.Group>
-                <Button variant="primary" type="submit">
+                <Form.Row>
+                    <Form.Group controlId="feedFormNumberOfPeople">
+                        <Form.Label>Number of people</Form.Label>
+                        {/* <Form.Control name="numberOfPeople" type="number" value={this.state.numberOfPeople} onChange={this.handleChange} /> */}
+                        <Form.Control as="select" value={this.state.numberOfPeople} name="numberOfPeople" onChange={this.handleChange}>
+                            <option>Choose...</option>
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5</option>
+                            <option>6</option>
+                            <option>7</option>
+                            <option>8</option>
+                            <option>9</option>
+                        </Form.Control>
+                        <Form.Text className="text-muted">
+                            Please select the quantity of people.
+                        </Form.Text>
+                    </Form.Group>
+                </Form.Row>
+                <Form.Row>
+                    <Form.Group controlId="feedFormBillAmount">
+                        <Form.Label>Bill amount</Form.Label>
+                        <Form.Control name="billAmount" type="number" value={this.state.billAmount} onChange={this.handleChange} />
+                    </Form.Group>
+                </Form.Row>
+                <Button variant="success" type="submit">
                     Submit
                 </Button>
             </Form>
