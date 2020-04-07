@@ -9,7 +9,7 @@ const NavBar = () => {
     return (
         <div>
             {!isAuthenticated && (
-                <Navbar variant="money" fixed="top">
+                <Navbar variant="money">
                     <Navbar.Brand>
                         <Link className="link" to="/">Bills Cutter</Link>&nbsp;
                     </Navbar.Brand>

@@ -26,9 +26,9 @@ class FeedForm extends React.Component {
         const requestOptions = {
             method: method,
             mode: mode,
+            referrerPolicy: 'origin-when-cross-origin',
             headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json; charset=utf-8'
             },
             body: JSON.stringify(formData)
         };
@@ -40,14 +40,9 @@ class FeedForm extends React.Component {
     render() {
         return (
             <Form onSubmit={this.handleSubmit}>
-                {/* <Form.Group controlId="formBasicRange">
-                    <Form.Label>Range</Form.Label>
-                    <Form.Control type="range" />
-                </Form.Group> */}
                 <Form.Row>
                     <Form.Group controlId="feedFormNumberOfPeople">
                         <Form.Label>Number of people</Form.Label>
-                        {/* <Form.Control name="numberOfPeople" type="number" value={this.state.numberOfPeople} onChange={this.handleChange} /> */}
                         <Form.Control as="select" value={this.state.numberOfPeople} name="numberOfPeople" onChange={this.handleChange}>
                             <option>Choose...</option>
                             <option>1</option>
@@ -69,6 +64,9 @@ class FeedForm extends React.Component {
                     <Form.Group controlId="feedFormBillAmount">
                         <Form.Label>Bill amount</Form.Label>
                         <Form.Control name="billAmount" type="number" value={this.state.billAmount} onChange={this.handleChange} />
+                        {/* <Form.Text className="text-muted">
+                            Please enter the bill amount
+                        </Form.Text> */}
                     </Form.Group>
                 </Form.Row>
                 <Button variant="success" type="submit">
@@ -78,4 +76,5 @@ class FeedForm extends React.Component {
         );
     }
 }
+
 export default FeedForm;

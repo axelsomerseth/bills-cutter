@@ -11,7 +11,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 const feedFormProps = {
     action: 'http://localhost:8080/',
     method: 'POST',
-    mode: 'no-cors'
+    mode: 'cors'
 }
 
 function App() {
