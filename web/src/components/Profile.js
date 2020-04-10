@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { useAuth0 } from "../react-auth0-spa";
-import { Card, CardDeck } from 'react-bootstrap';
+import { Card } from 'react-bootstrap';
 
 const Profile = () => {
     const { loading, user } = useAuth0();
@@ -11,7 +11,6 @@ const Profile = () => {
 
     return (
         <Fragment>
-            {/* <div id="App-content" className="App-content"> */}
             <Card bg="light" text="success" className="profile-card">
                 <Card.Header as="h5">Welcome!</Card.Header>
                 <Card.Img variant="top" src={user.picture} alt="Profile" />
@@ -23,7 +22,6 @@ const Profile = () => {
                     </Card.Text>
                 </Card.Body>
             </Card>
-            {/* </div> */}
         </Fragment>
     );
 };

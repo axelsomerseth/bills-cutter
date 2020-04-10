@@ -14,7 +14,9 @@ const feedFormProps = {
     mode: 'cors'
 }
 
-function App() {
+const App = () => {
+    document.title = 'Bills Cutter';
+
     return (
         <div className="App">
             <Router history={history}>

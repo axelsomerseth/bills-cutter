@@ -1,28 +1,37 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Button } from 'react-bootstrap';
+import SplitResult from "./SplitResult";
+import { useAuth0 } from "../react-auth0-spa";
 
-class FeedForm extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { numberOfPeople: 0, billAmount: 0 };
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
-    handleChange(event) {
-        const target = event.target;
-        const value = target.value;
-        const name = target.name;
-        this.setState({ [name]: value });
-    }
-    handleSubmit(event) {
+
+const FeedForm = (props) => {
+    const [numberOfPeople, setNumberOfPeople] = useState(0);
+    const [billAmount, setBillAmount] = useState(0);
+    const [username, setUsername] = useState('Unregistered');
+    const [splitResult, setSplitResult] = useState(0);
+    const [modalShow, setModalShow] = useState(false);
+    const { loading, user, isAuthenticated } = useAuth0();
+
+    useEffect(() => {
+        // document.title = `Welcome, ${username}!`;
+    });
+
+    /**
+     *  This fancy comment is just for fun
+     */
+    const handleSubmit = event => {
         event.preventDefault();
-        let formData = { numberOfPeople: Number(this.state.numberOfPeople), billAmount: Number(this.state.billAmount) };
-        this.getData(formData);
-    }
-    getData(formData) {
-        let url = this.props.action;
-        let method = this.props.method;
-        let mode = this.props.mode;
+        let formData = {
+            numberOfPeople: Number(numberOfPeople),
+            billAmount: !isNaN(Number(billAmount)) ? Number(billAmount) : 0,
+            username: username
+        };
+        if (!loading && user) {
+            setUsername(user.nickname);
+        }
+        let url = props.action;
+        let method = props.method;
+        let mode = props.mode;
         const requestOptions = {
             method: method,
             mode: mode,
@@ -32,49 +41,47 @@ class FeedForm extends React.Component {
             },
             body: JSON.stringify(formData)
         };
-        // TODO: Review .json() method, is not working
-        fetch(url, requestOptions)
-            .then(response => response.json())
-            .then(data => console.log(data));
-    }
-    render() {
-        return (
-            <Form onSubmit={this.handleSubmit}>
-                <Form.Row>
-                    <Form.Group controlId="feedFormNumberOfPeople">
-                        <Form.Label>Number of people</Form.Label>
-                        <Form.Control as="select" value={this.state.numberOfPeople} name="numberOfPeople" onChange={this.handleChange}>
-                            <option>Choose...</option>
-                            <option>1</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5</option>
-                            <option>6</option>
-                            <option>7</option>
-                            <option>8</option>
-                            <option>9</option>
-                        </Form.Control>
-                        <Form.Text className="text-muted">
-                            Please select the quantity of people.
-                        </Form.Text>
-                    </Form.Group>
-                </Form.Row>
-                <Form.Row>
-                    <Form.Group controlId="feedFormBillAmount">
-                        <Form.Label>Bill amount</Form.Label>
-                        <Form.Control name="billAmount" type="number" value={this.state.billAmount} onChange={this.handleChange} />
-                        {/* <Form.Text className="text-muted">
-                            Please enter the bill amount
-                        </Form.Text> */}
-                    </Form.Group>
-                </Form.Row>
-                <Button variant="success" type="submit">
-                    Submit
-                </Button>
-            </Form>
-        );
-    }
-}
+        fetch(url, requestOptions).then(response => response.json()).then(data => {
+            setSplitResult(!isNaN(data.money) ? data.money : 0);
+            setModalShow(true);
+        });
+    };
+
+    return (
+        <Form onSubmit={handleSubmit}>
+            <Form.Row>
+                <Form.Group controlId="feedFormNumberOfPeople">
+                    <Form.Label>Number of people</Form.Label>
+                    <Form.Control as="select" value={numberOfPeople} name="numberOfPeople" onChange={event => setNumberOfPeople(event.target.value)}>
+                        <option>Choose...</option>
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                        <option>6</option>
+                        <option>7</option>
+                        <option>8</option>
+                        <option>9</option>
+                    </Form.Control>
+                    <Form.Text className="text-muted">
+                        Please select the quantity of people.
+                    </Form.Text>
+                </Form.Group>
+            </Form.Row>
+            <Form.Row>
+                <Form.Group controlId="feedFormBillAmount">
+                    <Form.Label>Bill amount</Form.Label>
+                    <Form.Control name="billAmount" type="number" value={billAmount} onChange={event => setBillAmount(event.target.value)} />
+                </Form.Group>
+            </Form.Row>
+            <Button variant="success" type="submit">
+                Submit
+            </Button>
+            <SplitResult show={modalShow} onHide={() => setModalShow(false)} username={username} splitResult={splitResult} />
+        </Form>
+    );
+};
+
 
 export default FeedForm;

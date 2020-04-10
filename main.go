@@ -9,6 +9,7 @@ import (
 type Bill struct {
 	NumberOfPeople float64 `json:"numberOfPeople"`
 	BillAmount     float64 `json:"billAmount"`
+	Username       string  `json:"username"`
 }
 
 type Payer struct {
@@ -34,6 +35,7 @@ func handler(writer http.ResponseWriter, request *http.Request) {
 	}
 	switch request.Method {
 	case "GET":
+		fmt.Println("GET method")
 		var buffer []byte
 		payer := Payer{}
 		payer.Name = "Axel"
@@ -47,6 +49,7 @@ func handler(writer http.ResponseWriter, request *http.Request) {
 		buffer, _ = json.Marshal(payer)
 		writer.Write(buffer)
 	case "POST":
+		fmt.Println("POST method")
 		var bill Bill
 		err := json.NewDecoder(request.Body).Decode(&bill)
 		if err != nil {
@@ -54,7 +57,7 @@ func handler(writer http.ResponseWriter, request *http.Request) {
 			return
 		}
 		payer := Payer{}
-		payer.Name = "Axel"
+		payer.Name = bill.Username
 		result := bill.BillAmount / bill.NumberOfPeople
 		payer.Money = fmt.Sprintf("%f", result)
 		payerJSON, err := json.Marshal(payer)
@@ -63,13 +66,18 @@ func handler(writer http.ResponseWriter, request *http.Request) {
 		}
 		writer.Header().Set("Access-Control-Allow-Origin", "*")
 		writer.Header().Set("Access-Control-Allow-Credentials", "include")
-		// TODO: remove other methods
 		writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 		writer.Header().Set("Access-Control-Allow-Headers", "Accept, Authorization, Content-Type, Content-Length, Accept-Encoding")
 		writer.Header().Set("Content-Type", "application/json; charset=utf-8")
 		writer.WriteHeader(http.StatusOK)
 		writer.Write(payerJSON)
 	case "OPTIONS":
+		fmt.Println("OPTIONS method")
+		writer.Header().Set("Access-Control-Allow-Origin", "*")
+		writer.Header().Set("Access-Control-Allow-Credentials", "include")
+		writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		writer.Header().Set("Access-Control-Allow-Headers", "Accept, Authorization, Content-Type, Content-Length, Accept-Encoding")
+		writer.Header().Set("Content-Type", "application/json; charset=utf-8")
 		fmt.Fprintf(writer, "Sorry, only GET and POST methods are supported.")
 	default:
 		fmt.Fprintf(writer, "Sorry, only GET and POST methods are supported.")
