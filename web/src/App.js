@@ -4,15 +4,11 @@ import './App.css';
 import FeedForm from './components/FeedForm.js';
 import NavBar from "./components/NavBar";
 import Profile from "./components/Profile";
+import BillsHistory from "./components/BillsHistory";
 import PrivateRoute from "./components/PrivateRoute";
 import history from "./utils/history";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const feedFormProps = {
-    action: 'http://localhost:8080/',
-    method: 'POST',
-    mode: 'cors'
-}
 
 const App = () => {
     document.title = 'Bills Cutter';
@@ -26,14 +22,16 @@ const App = () => {
                 <Switch>
                     <Route path="/" exact>
                         <div id="App-content" className="App-content">
-                            <FeedForm name="feedForm" action={feedFormProps.action} method={feedFormProps.method} mode={feedFormProps.mode} />
+                            <FeedForm name="feedForm" />
                         </div>
                     </Route>
                     <PrivateRoute path="/profile" component={Profile} />
+                    <PrivateRoute path="/history" component={BillsHistory} />
                 </Switch>
             </Router>
         </div>
     );
 }
+
 
 export default App;

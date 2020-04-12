@@ -33,7 +33,8 @@ const NavBar = () => {
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="mr-auto">
-                            <Link className="link" to="/profile">Profile</Link>
+                            <Link className="nav-link link" to="/profile">Profile</Link>
+                            <Link className="nav-link link" to="/history">History</Link>
                         </Nav>
                     </Navbar.Collapse>
                     <Form inline className="justify-content-end">
