@@ -189,14 +189,14 @@ func main() {
 	{
 		api.POST("/", func(c *gin.Context) {
 			response := apiHandler(c.Writer, c.Request)
-			c.JSON(http.StatusOK, response)
+			c.JSONP(http.StatusOK, response)
 		})
 	}
 	history := router.Group("/history")
 	{
 		history.POST("/", func(c *gin.Context) {
 			response := historyHandler(c.Writer, c.Request)
-			c.JSON(http.StatusOK, response)
+			c.JSONP(http.StatusOK, response)
 		})
 	}
 	router.Run(":8080")

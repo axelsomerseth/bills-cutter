@@ -5,7 +5,7 @@ import { Table } from 'react-bootstrap';
 const BillsHistory = () => {
     const [tableData, setTableData] = useState([]);
     let _props = {
-        action: 'http://44.227.190.37:8080/history',
+        action: 'http://44.227.190.37:8080/history/',
         method: 'POST',
         mode: 'cors'
     }
