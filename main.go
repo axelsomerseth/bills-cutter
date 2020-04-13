@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gin-gonic/contrib/static"
+	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
 
@@ -117,22 +119,27 @@ func listBill(limit int) []Bill {
 
 // Client request and server response handler
 func handler(writer http.ResponseWriter, request *http.Request) {
-	// CORS policy: allowing to request from cross-origin domains
-	writer.Header().Set("Access-Control-Allow-Origin", "*")
-	writer.Header().Set("Access-Control-Allow-Credentials", "include")
-	writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-	writer.Header().Set("Access-Control-Allow-Headers", "Accept, Authorization, Content-Type, Content-Length, Accept-Encoding")
 	if request.URL.Path != "/" && request.URL.Path != "/history" {
 		http.Error(writer, "404 not found. Path: "+request.URL.Path, http.StatusNotFound)
 		return
 	}
 	switch request.Method {
 	case "GET":
-		fmt.Println("GET method")
-		writer.Header().Set("Content-Type", "application/json; charset=utf-8")
-		writer.WriteHeader(http.StatusOK)
-		fmt.Println("Welcome to Bills Cutter API!")
+		switch request.URL.Path {
+		case "/":
+			writer.WriteHeader(http.StatusOK)
+			fmt.Println("GET method")
+			fmt.Println("Welcome to Bills Cutter API!")
+			// http.ServeFile(writer, request, request.URL.Path[1:]+"./web/build/index.html")
+			router := gin.Default()
+			router.Use(static.Serve("/", static.LocalFile("./web/build", true)))
+		}
 	case "POST":
+		// CORS policy: allowing to request from cross-origin domains
+		writer.Header().Set("Access-Control-Allow-Origin", "*")
+		writer.Header().Set("Access-Control-Allow-Credentials", "include")
+		writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, PUT, DELETE")
+		writer.Header().Set("Access-Control-Allow-Headers", "Accept, Authorization, Content-Type, Content-Length, Accept-Encoding")
 		fmt.Println("POST method")
 		switch request.URL.Path {
 		case "/":
@@ -163,6 +170,11 @@ func handler(writer http.ResponseWriter, request *http.Request) {
 			writer.Write(buffer)
 		}
 	case "OPTIONS":
+		// CORS policy: allowing to request from cross-origin domains
+		writer.Header().Set("Access-Control-Allow-Origin", "*")
+		writer.Header().Set("Access-Control-Allow-Credentials", "include")
+		writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, PUT, DELETE")
+		writer.Header().Set("Access-Control-Allow-Headers", "Accept, Authorization, Content-Type, Content-Length, Accept-Encoding")
 		fmt.Println("OPTIONS method")
 		writer.Header().Set("Content-Type", "application/json; charset=utf-8")
 	default:
