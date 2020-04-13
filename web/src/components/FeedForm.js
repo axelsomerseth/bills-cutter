@@ -13,7 +13,7 @@ const FeedForm = () => {
     const [modalShow, setModalShow] = useState(false);
     const { loading, user } = useAuth0();
     let _props = {
-        action: 'http://localhost:8080/',
+        action: 'http://localhost:8080/api',
         method: 'POST',
         mode: 'cors'
     }

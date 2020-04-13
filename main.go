@@ -117,73 +117,87 @@ func listBill(limit int) []Bill {
 	return result
 }
 
-// Client request and server response handler
-func handler(writer http.ResponseWriter, request *http.Request) {
-	if request.URL.Path != "/" && request.URL.Path != "/history" {
+func historyHandler(writer http.ResponseWriter, request *http.Request) []Bill {
+	writer.Header().Set("Access-Control-Allow-Origin", "*")
+	writer.Header().Set("Access-Control-Allow-Credentials", "include")
+	writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, PUT, DELETE")
+	writer.Header().Set("Access-Control-Allow-Headers", "Accept, Authorization, Content-Type, Content-Length, Accept-Encoding")
+	var response []Bill
+	if request.URL.Path != "/history/" {
 		http.Error(writer, "404 not found. Path: "+request.URL.Path, http.StatusNotFound)
-		return
 	}
 	switch request.Method {
-	case "GET":
-		switch request.URL.Path {
-		case "/":
-			writer.WriteHeader(http.StatusOK)
-			fmt.Println("GET method")
-			fmt.Println("Welcome to Bills Cutter API!")
-			// http.ServeFile(writer, request, request.URL.Path[1:]+"./web/build/index.html")
-			router := gin.Default()
-			router.Use(static.Serve("/", static.LocalFile("./web/build", true)))
-		}
 	case "POST":
-		// CORS policy: allowing to request from cross-origin domains
-		writer.Header().Set("Access-Control-Allow-Origin", "*")
-		writer.Header().Set("Access-Control-Allow-Credentials", "include")
-		writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, PUT, DELETE")
-		writer.Header().Set("Access-Control-Allow-Headers", "Accept, Authorization, Content-Type, Content-Length, Accept-Encoding")
 		fmt.Println("POST method")
 		switch request.URL.Path {
-		case "/":
+		case "/history/":
+			writer.Header().Set("Content-Type", "application/json; charset=utf-8")
+			writer.WriteHeader(http.StatusOK)
+			response = listBill(15)
+			return response
+		}
+	case "OPTIONS":
+		fmt.Println("OPTIONS method")
+		writer.Header().Set("Content-Type", "application/json; charset=utf-8")
+	default:
+		fmt.Fprintf(writer, "Sorry, only GET and POST methods are supported.")
+	}
+	return response
+}
+
+func apiHandler(writer http.ResponseWriter, request *http.Request) Payer {
+	writer.Header().Set("Access-Control-Allow-Origin", "*")
+	writer.Header().Set("Access-Control-Allow-Credentials", "include")
+	writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, PUT, DELETE")
+	writer.Header().Set("Access-Control-Allow-Headers", "Accept, Authorization, Content-Type, Content-Length, Accept-Encoding")
+	var response Payer
+	if request.URL.Path != "/api/" {
+		http.Error(writer, "404 not found. Path: "+request.URL.Path, http.StatusNotFound)
+	}
+	switch request.Method {
+	case "POST":
+		fmt.Println("POST method")
+		switch request.URL.Path {
+		case "/api/":
 			writer.Header().Set("Content-Type", "application/json; charset=utf-8")
 			writer.WriteHeader(http.StatusOK)
 			var bill Bill
 			err := json.NewDecoder(request.Body).Decode(&bill)
 			if err != nil {
 				http.Error(writer, err.Error(), http.StatusBadRequest)
-				return
 			}
 			if bill.Username != "Unregistered" {
 				createBill(bill.NumberOfPeople, bill.BillAmount, bill.Username, bill.Notes)
 			}
 			money := fmt.Sprintf("%f", bill.BillAmount/bill.NumberOfPeople)
-			payer := Payer{Name: bill.Username, Money: money}
-			buffer, err2 := json.Marshal(payer)
-			if err2 != nil {
-				panic(err2)
-			}
-			writer.Write(buffer)
-		case "/history":
-			writer.Header().Set("Content-Type", "application/json; charset=utf-8")
-			writer.WriteHeader(http.StatusOK)
-			var buffer []byte
-			response := listBill(15)
-			buffer, _ = json.Marshal(response)
-			writer.Write(buffer)
+			response = Payer{Name: bill.Username, Money: money}
+			return response
 		}
 	case "OPTIONS":
-		// CORS policy: allowing to request from cross-origin domains
-		writer.Header().Set("Access-Control-Allow-Origin", "*")
-		writer.Header().Set("Access-Control-Allow-Credentials", "include")
-		writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, PUT, DELETE")
-		writer.Header().Set("Access-Control-Allow-Headers", "Accept, Authorization, Content-Type, Content-Length, Accept-Encoding")
 		fmt.Println("OPTIONS method")
 		writer.Header().Set("Content-Type", "application/json; charset=utf-8")
 	default:
 		fmt.Fprintf(writer, "Sorry, only GET and POST methods are supported.")
 	}
+	return response
 }
 
 func main() {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", handler)
-	http.ListenAndServe(":8080", mux)
+	router := gin.Default()
+	router.Use(static.Serve("/", static.LocalFile("./web/build", true)))
+	api := router.Group("/api")
+	{
+		api.POST("/", func(c *gin.Context) {
+			response := apiHandler(c.Writer, c.Request)
+			c.JSON(http.StatusOK, response)
+		})
+	}
+	history := router.Group("/history")
+	{
+		history.POST("/", func(c *gin.Context) {
+			response := historyHandler(c.Writer, c.Request)
+			c.JSON(http.StatusOK, response)
+		})
+	}
+	router.Run(":8080")
 }
